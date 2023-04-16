@@ -13,7 +13,7 @@ def s(ss):
     dt_upto = ss.partition("\"dt_upto\": \"")[2].partition("\", \"group_type\"")[0]
 
     group_type = (ss.partition("\", \"group_type\": \"")[2])[:-2]
-    print(dt_from,dt_upto, group_type)
+    
     base =0
 
     if group_type =='day':
@@ -69,7 +69,7 @@ def s(ss):
             base, d = bson.decode_document(js1, base)
             if (d['dt'].strftime('%Y-%m-01T00:00:00')) in lables:
                 dataset[(lables.index((d['dt'].strftime('%Y-%m-01T00:00:00'))))] += d['value']
-    print(dataset)
+    
     jsl = '["' + '", "'.join(lables) + '"]'
     lables = '"labels": ' + jsl+'}'
     jsl = '[' + ', '.join(map(str, dataset)) + ']'
@@ -77,16 +77,11 @@ def s(ss):
     return str(dataset)+', '+str(lables)
 
 @bot.message_handler(content_types=['text'])
-# def start(message):
-#     if message.text == '/start':
-#         # bot.send_message(message.from_user.id, "Hello")
-#         bot.register_next_step_handler(message, get_name)
-#     else:bot.send_message(message.from_user.id, 'Напиши /start')
 
-def get_name(message):
+def get_input(message):
     global in_data
     in_data = message.text
     out_tex = s(in_data)
     bot.send_message(message.from_user.id, out_tex)
-    bot.register_next_step_handler(message, get_name)
+    bot.register_next_step_handler(message, get_input)
 bot.polling(none_stop=True, interval=0)
